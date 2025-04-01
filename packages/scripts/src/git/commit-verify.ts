@@ -1,5 +1,6 @@
-#!/usr/bin/env node
 import fs from 'node:fs';
+import path from 'node:path';
+import { execSync } from 'node:child_process';
 
 interface CommitType {
   type: string;
@@ -22,12 +23,12 @@ const COMMIT_TYPES: Record<string, CommitType> = {
   deps: { type: 'deps', description: '依赖相关' },
 };
 
-const MAX_LENGTH = 50;
+const MAX_LENGTH = 100;
 const COMMIT_RE = new RegExp(
   `^(revert: )?(${Object.keys(COMMIT_TYPES).join('|')})(?:\\((.+)\\))?: (.{1,${MAX_LENGTH}})$`
 );
 
-function validateCommitMessage(message: string): void {
+export function validateCommitMessage(message: string): void {
   if (!message) {
     throw new Error('提交信息不能为空！');
   }
@@ -53,12 +54,36 @@ function validateCommitMessage(message: string): void {
   }
 }
 
-try {
-  const msgPath = process.argv[2];
-  const msg = fs.readFileSync(msgPath, 'utf-8').trim();
+/**
+ * 自动查找Git提交消息文件路径
+ * 首先尝试使用传入的路径，如果没有传入则尝试查找默认位置
+ */
+export function findCommitMsgPath(providedPath?: string): string {
+  // 如果提供了路径，直接使用
+  if (providedPath && fs.existsSync(providedPath)) {
+    return providedPath;
+  }
+
+  // 尝试查找常见的提交消息文件位置
+  const gitDir = execSync('git rev-parse --git-dir', { encoding: 'utf-8' }).trim();
+  const possiblePaths = [
+    path.join(gitDir, 'COMMIT_EDITMSG'),
+    path.join(gitDir, 'MERGE_MSG'),
+    path.join(gitDir, 'TAG_EDITMSG'),
+    path.join(gitDir, 'SQUASH_MSG'),
+  ];
+
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      return p;
+    }
+  }
+
+  throw new Error('无法找到Git提交消息文件，请确保当前目录是Git仓库');
+}
+
+export function verifyCommitMessage(msgPath?: string): void {
+  const actualPath = findCommitMsgPath(msgPath);
+  const msg = fs.readFileSync(actualPath, 'utf-8').trim();
   validateCommitMessage(msg);
-  process.exit(0);
-} catch (error) {
-  console.error(`错误：${(error as Error).message}`);
-  process.exit(1);
 }

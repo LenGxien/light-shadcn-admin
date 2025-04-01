@@ -3,11 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "sa": "./bin.ts"
+  },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "dev": "tsx watch"
+  },
+  "exports": {
+    ".": "./src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^20.11.24",
+    "commander": "^12.0.0",
+    "tsx": "^4.7.1",
     "typescript": "~5.7.2"
   }
 }

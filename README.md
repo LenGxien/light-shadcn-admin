@@ -77,6 +77,8 @@ pnpm build
 └── pages/          # 页面目录
 ```
 
+**注意**：如提交git仓库，请先执行pnpm simple-git-hooks，后面每次提交代码都会自动执行eslint和prettier，保证代码规范。
+
 ## 文档
 
 - [Vue 3 文档](https://vuejs.org/)
