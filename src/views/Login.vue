@@ -54,8 +54,7 @@
     password: z.string().min(6, '密码至少需要6个字符'),
   });
 
-  const loginSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log('Form values:', values);
+  const loginSubmit = () => {
     router.push('/');
   };
 </script>

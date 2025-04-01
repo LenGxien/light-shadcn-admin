@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center space-x-2">
-    <button
+    <Button
       class="relative p-2 hover:bg-accent hover:text-accent-foreground rounded-lg overflow-hidden transition-colors duration-200"
       @click="toggleTheme"
     >
@@ -15,14 +15,15 @@
         class="absolute inset-0 bg-primary/10 transform transition-transform duration-200"
         :class="{ 'scale-100': isDark, 'scale-0': !isDark }"
       ></div>
-    </button>
+    </Button>
   </div>
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import { useDark, useToggle } from '@vueuse/core'
+  import { Icon } from '@iconify/vue';
+  import { useDark, useToggle } from '@vueuse/core';
+  import { Button } from '@/components/ui/button';
 
-const isDark = useDark()
-const toggleTheme = useToggle(isDark)
+  const isDark = useDark();
+  const toggleTheme = useToggle(isDark);
 </script>
