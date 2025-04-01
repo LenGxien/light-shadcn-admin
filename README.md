@@ -24,10 +24,16 @@ LightShadcnAdmin 是一个清新优雅、高颜值且功能强大的后台管理
 ### Shadcn/Vue 配置
 
 项目已完成Shadcn/Vue的初始化配置，包括：
+
 - 安装并配置了必要的依赖（Tailwind CSS、Radix Vue等）
 - 设置了组件配置文件 `components.json`
 - 配置了暗色模式支持
 - 设置了组件样式和主题
+
+## 示例图片
+
+![](./public/images/dashboard.png)
+![](./public/images/login.png)
 
 ## 快速开始
 
@@ -79,11 +85,3 @@ pnpm build
 - [Tailwind CSS 文档](https://tailwindcss.com/)
 - [Shadcn/Vue 文档](https://www.shadcn-vue.com/)
 - [VeeValidate 文档](https://vee-validate.logaretm.com/v4/)
-
-## 贡献
-
-欢迎提交问题和改进建议！请确保遵循项目的代码规范和提交规范。
-
-## 许可
-
-[MIT License](LICENSE)
