@@ -23,7 +23,7 @@ const COMMIT_TYPES: Record<string, CommitType> = {
   deps: { type: 'deps', description: '依赖相关' },
 };
 
-const MAX_LENGTH = 200;
+const MAX_LENGTH = 500;
 const COMMIT_RE = new RegExp(
   `^(revert: )?(${Object.keys(COMMIT_TYPES).join('|')})(?:\\((.+)\\))?: (.{1,${MAX_LENGTH}})$`
 );

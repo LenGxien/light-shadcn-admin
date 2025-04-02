@@ -50,11 +50,20 @@
           <CollapsibleContent>
             <SidebarMenuSub>
               <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
-                <SidebarMenuSubButton as-child>
-                  <a :href="subItem.url">
+                <router-link
+                  :to="subItem.url"
+                  v-slot="{ isActive, isExactActive, href, navigate }"
+                  custom
+                >
+                  <SidebarMenuSubButton
+                    as-child
+                    :is-active="isActive || isExactActive"
+                    :href="href"
+                    @click="navigate"
+                  >
                     <span>{{ subItem.title }}</span>
-                  </a>
-                </SidebarMenuSubButton>
+                  </SidebarMenuSubButton>
+                </router-link>
               </SidebarMenuSubItem>
             </SidebarMenuSub>
           </CollapsibleContent>

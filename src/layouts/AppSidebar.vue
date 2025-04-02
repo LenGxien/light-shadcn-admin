@@ -11,6 +11,8 @@
     SidebarHeader,
     SidebarRail,
   } from '@/components/ui/sidebar';
+  import { useRoute } from 'vue-router';
+  import { computed } from 'vue';
 
   import {
     AudioWaveform,
@@ -28,6 +30,24 @@
   const props = withDefaults(defineProps<SidebarProps>(), {
     collapsible: 'icon',
   });
+
+  const route = useRoute();
+  const currentPath = computed(() => route.path);
+
+  // 检查当前路径是否匹配菜单项或其子项
+  function isMenuActive(menuItem: any): boolean {
+    // 检查当前路径是否与菜单项URL匹配
+    if (menuItem.url && menuItem.url !== '#' && currentPath.value.startsWith(menuItem.url)) {
+      return true;
+    }
+    // 检查当前路径是否与子菜单项URL匹配
+    if (menuItem.items && menuItem.items.length) {
+      return menuItem.items.some(
+        (item: any) => item.url && item.url !== '#' && currentPath.value === item.url
+      );
+    }
+    return false;
+  }
 
   // This is sample data.
   const data = {
@@ -53,16 +73,19 @@
         plan: 'Free',
       },
     ],
-    navMain: [
+    navMain: computed(() => [
       {
         title: 'Playground',
-        url: '#',
+        url: '/',
         icon: SquareTerminal,
-        isActive: true,
+        isActive: isMenuActive({
+          url: '/',
+          items: [{ url: '/' }, { url: '#' }, { url: '#' }],
+        }),
         items: [
           {
-            title: 'History',
-            url: '#',
+            title: 'Dashboard',
+            url: '/',
           },
           {
             title: 'Starred',
@@ -75,21 +98,25 @@
         ],
       },
       {
-        title: 'Models',
+        title: '异常页',
         url: '#',
         icon: Bot,
+        isActive: isMenuActive({
+          url: '#',
+          items: [{ url: '/403' }, { url: '/404' }, { url: '/500' }],
+        }),
         items: [
           {
-            title: 'Genesis',
-            url: '#',
+            title: '403',
+            url: '/403',
           },
           {
-            title: 'Explorer',
-            url: '#',
+            title: '404',
+            url: '/404',
           },
           {
-            title: 'Quantum',
-            url: '#',
+            title: '500',
+            url: '/500',
           },
         ],
       },
@@ -97,6 +124,10 @@
         title: 'Documentation',
         url: '#',
         icon: BookOpen,
+        isActive: isMenuActive({
+          url: '#',
+          items: [{ url: '#' }, { url: '#' }, { url: '#' }, { url: '#' }],
+        }),
         items: [
           {
             title: 'Introduction',
@@ -120,6 +151,10 @@
         title: 'Settings',
         url: '#',
         icon: Settings2,
+        isActive: isMenuActive({
+          url: '#',
+          items: [{ url: '#' }, { url: '#' }, { url: '#' }, { url: '#' }],
+        }),
         items: [
           {
             title: 'General',
@@ -139,7 +174,7 @@
           },
         ],
       },
-    ],
+    ]),
     projects: [
       {
         name: 'Design Engineering',
@@ -166,7 +201,7 @@
       <TeamSwitcher :teams="data.teams" />
     </SidebarHeader>
     <SidebarContent>
-      <NavMain :items="data.navMain" />
+      <NavMain :items="data.navMain.value" />
       <NavProjects :projects="data.projects" />
     </SidebarContent>
     <SidebarFooter>

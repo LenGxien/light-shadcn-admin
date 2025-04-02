@@ -1,5 +1,7 @@
 <script setup lang="ts">
   import AppSidebar from './AppSidebar.vue';
+  import GlobalTab from './modules/global-tab/index.vue';
+  import AppMain from './modules/app-main/index.vue';
   import {
     Breadcrumb,
     BreadcrumbItem,
@@ -34,8 +36,9 @@
           </Breadcrumb>
         </div>
       </header>
-      <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <router-view></router-view>
+      <GlobalTab />
+      <div class="flex flex-1 flex-col gap-4 pt-0">
+        <AppMain />
       </div>
     </SidebarInset>
   </SidebarProvider>
