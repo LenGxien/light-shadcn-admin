@@ -7,6 +7,7 @@ export interface TabItem {
   path: string;
   name: string;
   cached?: boolean;
+  icon?: any; // 添加图标字段
 }
 
 export const useTabStore = defineStore('tab', () => {
@@ -18,9 +19,26 @@ export const useTabStore = defineStore('tab', () => {
   function addTab(tab: TabItem) {
     const existTab = tabs.value.find((t) => t.path === tab.path);
     if (!existTab) {
-      tabs.value.push(tab);
+      // 如果是首页标签（路径为'/'或''），则插入到数组最前面
+      if (tab.path === '/' || tab.path === '') {
+        tabs.value.unshift(tab);
+      } else {
+        tabs.value.push(tab);
+      }
+      // 对标签进行排序，确保首页始终在第一位
+      sortTabs();
     }
     activeTab.value = tab.path;
+  }
+
+  // 确保首页标签始终排在第一位
+  function sortTabs() {
+    tabs.value.sort((a, b) => {
+      // 首页标签（路径为'/'或''）始终排在最前面
+      if (a.path === '/' || a.path === '') return -1;
+      if (b.path === '/' || b.path === '') return 1;
+      return 0;
+    });
   }
 
   // 关闭标签页
@@ -87,5 +105,6 @@ export const useTabStore = defineStore('tab', () => {
     closeLeftTabs,
     closeRightTabs,
     closeAllTabs,
+    sortTabs,
   };
 });

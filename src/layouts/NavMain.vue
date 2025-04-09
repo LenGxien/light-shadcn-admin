@@ -1,29 +1,30 @@
 <script setup lang="ts">
-  import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-  import {
-    SidebarGroup,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
-  } from '@/components/ui/sidebar';
-  import { ChevronRight, type LucideIcon } from 'lucide-vue-next';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from '@/components/ui/sidebar';
+import { ChevronRight, type LucideIcon } from 'lucide-vue-next';
 
-  defineProps<{
-    items: {
+defineProps<{
+  items: {
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
+    items?: {
       title: string;
       url: string;
       icon?: LucideIcon;
-      isActive?: boolean;
-      items?: {
-        title: string;
-        url: string;
-      }[];
     }[];
-  }>();
+  }[];
+}>();
 </script>
 
 <template>
@@ -61,7 +62,10 @@
                     :href="href"
                     @click="navigate"
                   >
-                    <span>{{ subItem.title }}</span>
+                    <div class="flex items-center gap-2">
+                      <component :is="subItem.icon" v-if="subItem.icon" class="h-4 w-4" />
+                      <span>{{ subItem.title }}</span>
+                    </div>
                   </SidebarMenuSubButton>
                 </router-link>
               </SidebarMenuSubItem>

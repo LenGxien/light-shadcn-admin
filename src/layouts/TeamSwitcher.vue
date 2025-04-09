@@ -1,34 +1,34 @@
 <script setup lang="ts">
-  import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
-    DropdownMenuTrigger,
-  } from '@/components/ui/dropdown-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
-  import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
-  } from '@/components/ui/sidebar';
-  import { ChevronsUpDown, Plus } from 'lucide-vue-next';
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from '@/components/ui/sidebar';
+import { ChevronsUpDown, Plus } from 'lucide-vue-next';
 
-  import { type Component, ref } from 'vue';
+import { type Component, ref } from 'vue';
 
-  const props = defineProps<{
-    teams: {
-      name: string;
-      logo: Component;
-      plan: string;
-    }[];
-  }>();
+const props = defineProps<{
+  teams: {
+    name: string;
+    logo: Component;
+    plan: string;
+  }[];
+}>();
 
-  const { isMobile } = useSidebar();
-  const activeTeam = ref(props.teams[0]);
+const { isMobile } = useSidebar();
+const activeTeam = ref(props.teams[0]);
 </script>
 
 <template>
