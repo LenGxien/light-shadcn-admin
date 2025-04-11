@@ -1,0 +1,22 @@
+:root {
+  --transition-duration: 0.3s;
+  --dark-sidebar: 0;
+  --gray-mode: 0;
+  --color-weak: 0;
+  --theme-mode: 'light';
+}
+
+/* 暗色侧边栏 */
+:root[style*='--dark-sidebar:1'] [data-sidebar='sidebar'] {
+  --sidebar-background: theme('colors.slate.950');
+  --sidebar-foreground: theme('colors.slate.50');
+  background-color: var(--sidebar-background) !important;
+  color: var(--sidebar-foreground) !important;
+}
+
+.dark-sidebar [data-sidebar='sidebar'] {
+  --sidebar-background: theme('colors.slate.950');
+  --sidebar-foreground: theme('colors.slate.50');
+  background-color: var(--sidebar-background) !important;
+  color: var(--sidebar-foreground) !important;
+}

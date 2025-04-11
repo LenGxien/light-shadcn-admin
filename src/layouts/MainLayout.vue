@@ -6,7 +6,7 @@ import AppBreadcrumb from './modules/app-breadcrumb/index.vue';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import ThemeSettings from '@/layouts/modules/theme-settings.vue';
+import AppSettings from '@/layouts/modules/app-settings/index.vue';
 import ThemeToggle from '@/layouts/ThemeToggle.vue';
 import { useThemeStore } from '@/stores/theme';
 import { computed } from 'vue';
@@ -42,7 +42,7 @@ const mainStyle = computed(() => {
         <div class="flex-1" />
         <div class="flex items-center space-x-2 px-4">
           <ThemeToggle />
-          <ThemeSettings />
+          <AppSettings />
         </div>
       </header>
       <AppTab v-if="showTabs" />

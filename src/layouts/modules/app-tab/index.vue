@@ -47,7 +47,7 @@ watch(
   { immediate: true }
 );
 
-// 确保仪表盘标签页始终存在
+// 确保仪表盘标签页始终存在，并在页面刷新后设置正确的活动标签
 onMounted(() => {
   const dashboardTab = tabs.value.find((tab) => tab.path === '/dashboard');
   if (!dashboardTab) {
@@ -56,6 +56,12 @@ onMounted(() => {
       title: '仪表盘',
       icon: Home,
     });
+  }
+
+  // 页面刷新后，根据当前路由路径设置活动标签
+  const currentPath = route.path;
+  if (currentPath && tabs.value.some((tab) => tab.path === currentPath)) {
+    tabStore.activeTab = currentPath;
   }
 });
 
@@ -134,7 +140,7 @@ const handleCloseAllTabs = () => {
           </ContextMenu>
         </template>
       </div>
-      <ScrollBar orientation="horizontal" />
+      <ScrollBar orientation="horizontal" class="mt-1" />
     </ScrollArea>
   </div>
 </template>
@@ -159,7 +165,7 @@ const handleCloseAllTabs = () => {
   margin: 0 -15px;
   cursor: pointer;
   transition: 0.2s;
-  -webkit-mask-box-image: url("data:image/svg+xml,%3Csvg width='64' height='30' viewBox='0 0 64 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M27 0c-6.627 0-12 5.373-12 12v6c0 8.284-6.716 15-15 15h67c-8.284 0-15-6.716-15-15v-6c0-6.627-5.373-12-12-12H27z' fill='%23F8EAE7'/%3E%3C/svg%3E")
+  -webkit-mask-box-image: url("data:image/svg+xml,%3Csvg width='62' height='29' viewBox='0 0 62 29' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M27 0c-6.627 0-12 5.373-12 12v6c0 8.284-6.716 15-15 15h67c-8.284 0-15-6.716-15-15v-6c0-6.627-5.373-12-12-12H27z' fill='%23F8EAE7'/%3E%3C/svg%3E")
     12 27 15;
 }
 
@@ -198,7 +204,7 @@ span:has(> .chrome-tab:not(.tab-active):hover) + span > .chrome-tab::after {
   background-color: hsl(var(--primary) / 0.2);
   /* 使用主题色作为文本颜色 */
   color: hsl(var(--primary));
-  z-index: 1;
+  z-index: 99;
 }
 
 /* 卡片风格标签页 */
