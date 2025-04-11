@@ -5,6 +5,7 @@ import AppMain from './modules/app-main/index.vue';
 import AppBreadcrumb from './modules/app-breadcrumb/index.vue';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import ThemeSettings from '@/layouts/modules/theme-settings.vue';
 import ThemeToggle from '@/layouts/ThemeToggle.vue';
 import { useThemeStore } from '@/stores/theme';
@@ -12,12 +13,24 @@ import { computed } from 'vue';
 
 const themeStore = useThemeStore();
 const showTabs = computed(() => themeStore.pageFeatures.showTabs);
+const scrollMode = computed(() => themeStore.pageFeatures.scrollMode);
+
+const isMainScroll = computed(() => scrollMode.value === 'mainScroll');
+
+const mainStyle = computed(() => {
+  return {
+    height: isMainScroll.value
+      ? 'calc(100vh - var(--header-height) - var(--tab-height) - 20px)'
+      : 'auto',
+    overflowY: isMainScroll.value ? 'hidden' : 'auto',
+  };
+});
 </script>
 
 <template>
   <SidebarProvider>
     <AppSidebar />
-    <SidebarInset class="overflow-x-hidden">
+    <SidebarInset class="overflow-x-hidden" :class="{ 'overflow-y-hidden': isMainScroll }">
       <header
         class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b"
       >
@@ -33,31 +46,14 @@ const showTabs = computed(() => themeStore.pageFeatures.showTabs);
         </div>
       </header>
       <AppTab v-if="showTabs" />
-      <div class="flex flex-1 flex-col gap-4 pt-0">
+      <ScrollArea class="app-main" :style="mainStyle">
         <AppMain />
-      </div>
+      </ScrollArea>
     </SidebarInset>
   </SidebarProvider>
 </template>
 
 <style>
-/* 紧凑模式 */
-.compact-mode .h-16 {
-  height: 3rem;
-}
-
-.compact-mode .h-10 {
-  height: 2rem;
-}
-
-.compact-mode .p-6 {
-  padding: 1rem;
-}
-
-.compact-mode .gap-4 {
-  gap: 0.5rem;
-}
-
 /* 主题颜色 */
 [data-theme='blue'] {
   --primary: 221.2 83.2% 53.3%;
@@ -72,5 +68,16 @@ const showTabs = computed(() => themeStore.pageFeatures.showTabs);
 /* 色弱模式 */
 .color-weak {
   filter: grayscale(0.9) opacity(0.95);
+}
+
+/* 标签页高度变量 */
+:root {
+  --header-height: 4rem;
+  --tab-height: 2.5rem;
+}
+
+/* 解决scroll-area自带的div没填充高度 */
+.app-main > div > div {
+  height: 100%;
 }
 </style>

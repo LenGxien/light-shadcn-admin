@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTabStore } from '@/stores/modules/tab';
+import { useThemeStore } from '@/stores/theme';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -13,6 +14,10 @@ import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const tabStore = useTabStore();
+const themeStore = useThemeStore();
+
+// 获取标签栏风格
+const tabsStyle = computed(() => themeStore.pageFeatures.tabsStyle);
 
 // 计算属性：确保仪表盘始终在第一个位置
 const tabs = computed(() => {
@@ -83,23 +88,29 @@ const handleCloseAllTabs = () => {
 <template>
   <div class="border-b bg-background/95 backdrop-blur">
     <ScrollArea class="w-full whitespace-nowrap">
-      <div class="flex items-center space-x-1 py-2 px-4">
-        <template v-for="tab in tabs" :key="tab.path">
+      <div
+        class="flex items-center space-x-1 py-2 px-4"
+        :class="{ 'chrome-tabs': tabsStyle === 'chrome' }"
+      >
+        <template v-for="(tab, index) in tabs" :key="tab.path">
           <ContextMenu>
             <ContextMenuTrigger>
               <router-link :to="tab.path" custom v-slot="{ href, navigate }">
                 <div
-                  class="group relative flex items-center px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground rounded-md cursor-pointer gap-2"
+                  class="tab-item group relative flex items-center px-2 py-1.5 text-sm font-medium transition-colors cursor-pointer gap-2"
                   :class="{
-                    'bg-primary text-primary-foreground': activeTab === tab.path,
+                    'chrome-tab': tabsStyle === 'chrome',
+                    'tab-active': activeTab === tab.path,
+                    'card-tab': tabsStyle !== 'chrome',
+                    'is-one': index === 0,
                   }"
                   :href="href"
                   @click="navigate"
                 >
                   <component :is="tab.icon" v-if="tab.icon" class="h-4 w-4" />
-                  <span>{{ tab.title }}</span>
+                  <div class="max-w-240px ellipsis-text mx-1">{{ tab.title }}</div>
                   <button
-                    class="ml-1 rounded-sm hover:bg-accent-foreground/20 group-hover:opacity-100"
+                    class="ml-1 rounded-sm opacity-70 hover:opacity-100 hover:bg-accent-foreground/20"
                     @click.stop="handleCloseTab(tab.path)"
                   >
                     <X class="h-3 w-3" />
@@ -127,3 +138,89 @@ const handleCloseAllTabs = () => {
     </ScrollArea>
   </div>
 </template>
+
+<style>
+/* 通用标签页样式 */
+.tab-item {
+  position: relative;
+  height: 2rem;
+  overflow: hidden;
+}
+
+/* 谷歌风格标签页 */
+.chrome-tabs {
+  height: var(--tab-height);
+  padding: 0.25rem 0.5rem;
+  background-color: hsl(var(--background));
+}
+
+.chrome-tab {
+  padding: 0px 28px;
+  margin: 0 -15px;
+  cursor: pointer;
+  transition: 0.2s;
+  -webkit-mask-box-image: url("data:image/svg+xml,%3Csvg width='64' height='30' viewBox='0 0 64 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M27 0c-6.627 0-12 5.373-12 12v6c0 8.284-6.716 15-15 15h67c-8.284 0-15-6.716-15-15v-6c0-6.627-5.373-12-12-12H27z' fill='%23F8EAE7'/%3E%3C/svg%3E")
+    12 27 15;
+}
+
+/* 谷歌风格标签页分割线 */
+.chrome-tab::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 50%;
+  width: 2px;
+  background-color: hsl(var(--primary) / 0.7);
+  pointer-events: none;
+  z-index: 99;
+  transition: all 0.5s;
+}
+
+/* 隐藏第一个chrome-tab的分割线 */
+.chrome-tab.is-one::after,
+.chrome-tab.tab-active::after {
+  display: none;
+}
+
+/* 高亮、hover标签的父级下一个相邻的span */
+span:has(> .tab-active) + span > .chrome-tab::after,
+.chrome-tab:not(.tab-active):hover::after,
+span:has(> .chrome-tab:not(.tab-active):hover) + span > .chrome-tab::after {
+  display: none;
+}
+
+/* 移除高亮标签页的hover效果 */
+.chrome-tab.tab-active {
+  /* 降低背景色透明度，使用主题色但透明度降低 */
+  background-color: hsl(var(--primary) / 0.2);
+  /* 使用主题色作为文本颜色 */
+  color: hsl(var(--primary));
+  z-index: 1;
+}
+
+/* 卡片风格标签页 */
+.card-tab {
+  border-radius: 0.25rem;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+
+/* 卡片风格标签页高亮状态 */
+.card-tab.tab-active {
+  /* 降低背景色透明度，使用主题色但透明度降低 */
+  background-color: hsl(var(--primary) / 0.2);
+  /* 使用主题色作为文本颜色 */
+  color: hsl(var(--primary));
+}
+
+/* 非高亮卡片的hover效果 */
+.card-tab:not(.tab-active):hover,
+.chrome-tab:not(.tab-active):hover {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+</style>

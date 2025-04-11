@@ -53,6 +53,7 @@ const formData = ref({
   showBreadcrumbIcon: pageFeatures.value.showBreadcrumbIcon,
   showTabs: pageFeatures.value.showTabs,
   tabsStyle: pageFeatures.value.tabsStyle,
+  scrollMode: pageFeatures.value.scrollMode,
   primaryColor: primaryColor.value,
 });
 
@@ -74,8 +75,32 @@ const cssVars = {
     { key: 'pageTransition', cssVar: '--transition-type' },
     { key: 'tabsStyle', cssVar: '--tabs-style' },
     { key: 'reloadStrategy', cssVar: '--reload-strategy' },
+    { key: 'scrollMode', cssVar: '--scroll-mode' },
   ],
 };
+
+// 保存配置到store
+function saveConfig() {
+  // 更新主题相关配置
+  themeStore.darkSidebar = formData.value.darkSidebar;
+  themeStore.grayMode = formData.value.grayMode;
+  themeStore.colorWeakMode = formData.value.colorWeakMode;
+
+  // 更新页面功能配置
+  themeStore.updatePageFeatures({
+    reloadStrategy: formData.value.reloadStrategy,
+    pageTransitionEnabled: formData.value.pageTransitionEnabled,
+    pageTransition: formData.value.pageTransition,
+    showBreadcrumb: formData.value.showBreadcrumb,
+    showBreadcrumbIcon: formData.value.showBreadcrumbIcon,
+    showTabs: formData.value.showTabs,
+    tabsStyle: formData.value.tabsStyle,
+    scrollMode: formData.value.scrollMode,
+  });
+
+  // 保存状态到localStorage
+  themeStore.saveState();
+}
 
 // 设置监听器
 function setupWatchers() {
@@ -85,6 +110,7 @@ function setupWatchers() {
       () => formData.value[key],
       (newValue) => {
         updateCSSVariable(cssVar, newValue ? '1' : '0');
+        saveConfig(); // 保存到store
       }
     );
   });
@@ -95,6 +121,7 @@ function setupWatchers() {
       () => formData.value[key],
       (newValue) => {
         updateCSSVariable(cssVar, newValue);
+        saveConfig(); // 保存到store
       }
     );
   });
@@ -109,6 +136,7 @@ function setupWatchers() {
       if (hsl) {
         updateCSSVariable('--primary', `${hsl.h} ${hsl.s}% ${hsl.l}%`);
       }
+      saveConfig(); // 保存到store
     },
     { immediate: true }
   );
@@ -123,6 +151,45 @@ function setupWatchers() {
     { immediate: true }
   );
 
+  // 监听页面功能配置变更
+  watch(
+    () => formData.value.showBreadcrumb,
+    (value) => {
+      themeStore.updatePageFeatures({ showBreadcrumb: value });
+    }
+  );
+
+  watch(
+    () => formData.value.showBreadcrumbIcon,
+    (value) => {
+      themeStore.updatePageFeatures({ showBreadcrumbIcon: value });
+    }
+  );
+
+  watch(
+    () => formData.value.showTabs,
+    (value) => {
+      themeStore.updatePageFeatures({ showTabs: value });
+    }
+  );
+
+  watch(
+    () => formData.value.tabsStyle,
+    (value) => {
+      themeStore.updatePageFeatures({ tabsStyle: value });
+    }
+  );
+
+  // 滚动模式监听
+  watch(
+    () => formData.value.scrollMode,
+    (value) => {
+      themeStore.updatePageFeatures({ scrollMode: value });
+      updateCSSVariable('--scroll-mode', value);
+      saveConfig(); // 保存到store
+    }
+  );
+
   // 灰度模式监听
   watch(
     () => formData.value.grayMode,
@@ -132,6 +199,8 @@ function setupWatchers() {
       } else {
         document.documentElement.classList.remove('gray-mode');
       }
+      themeStore.grayMode = value; // 直接更新store
+      themeStore.saveState(); // 保存状态
     }
   );
 
@@ -144,6 +213,8 @@ function setupWatchers() {
       } else {
         document.documentElement.classList.remove('color-weak');
       }
+      themeStore.colorWeakMode = value; // 直接更新store
+      themeStore.saveState(); // 保存状态
     }
   );
 
@@ -156,6 +227,8 @@ function setupWatchers() {
       } else {
         document.documentElement.classList.remove('dark-sidebar');
       }
+      themeStore.darkSidebar = value; // 直接更新store
+      themeStore.saveState(); // 保存状态
     }
   );
 }
@@ -233,12 +306,13 @@ function resetConfig() {
     colorWeakMode: false,
     primaryColor: '#8b5cf6',
     reloadStrategy: '关闭页面',
-    pageTransition: '滑动',
+    pageTransition: 'slide',
     pageTransitionEnabled: true,
     showBreadcrumb: true,
     showBreadcrumbIcon: true,
     showTabs: true,
     tabsStyle: '谷歌风格',
+    scrollMode: 'mainScroll',
   };
   primaryColor.value = '#8b5cf6';
   initializeThemeVariables();
@@ -327,16 +401,30 @@ onMounted(() => {
           <Separator class="my-6" label="页面功能" />
 
           <div class="grid gap-4">
-            <!-- 重置策略 -->
+            <!-- 重置缓存策略 -->
             <div class="flex items-center justify-between space-y-0">
-              <Label class="flex-1">重置策略</Label>
+              <Label class="flex-1">重置缓存策略</Label>
               <Select v-model="formData.reloadStrategy">
                 <SelectTrigger class="w-32">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="关闭页面">关闭页面</SelectItem>
-                  <SelectItem value="主体滚动">主体滚动</SelectItem>
+                  <SelectItem value="刷新页面">刷新页面</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <!-- 滚动模式 -->
+            <div class="flex items-center justify-between space-y-0">
+              <Label class="flex-1">滚动模式</Label>
+              <Select v-model="formData.scrollMode">
+                <SelectTrigger class="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mainScroll">主体滚动</SelectItem>
+                  <SelectItem value="outScroll">外层滚动</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -344,22 +432,27 @@ onMounted(() => {
             <!-- 页面切换动画 -->
             <div class="flex items-center justify-between space-y-0">
               <Label class="flex-1">页面切换动画</Label>
-              <div class="flex items-center gap-2">
-                <Switch v-model="formData.pageTransitionEnabled" />
-                <Select
-                  v-model="formData.pageTransition"
-                  :disabled="!formData.pageTransitionEnabled"
-                >
-                  <SelectTrigger class="w-24">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="滑动">滑动</SelectItem>
-                    <SelectItem value="淡入">淡入</SelectItem>
-                    <SelectItem value="缩放">缩放</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Switch v-model="formData.pageTransitionEnabled" />
+            </div>
+            <div
+              class="flex items-center justify-between space-y-0"
+              v-if="formData.pageTransitionEnabled"
+            >
+              <Label class="flex-1">切换动画类型</Label>
+              <Select v-model="formData.pageTransition">
+                <SelectTrigger class="w-32">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="slide">滑动</SelectItem>
+                  <SelectItem value="fade">淡入淡出</SelectItem>
+                  <SelectItem value="scale">缩放消退</SelectItem>
+                  <SelectItem value="fade-bottom">底部消退</SelectItem>
+                  <SelectItem value="zoom-fade">渐变</SelectItem>
+                  <SelectItem value="zoom-out">闪现</SelectItem>
+                  <SelectItem value="none">无</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <!-- 面包屑设置 -->
@@ -368,11 +461,8 @@ onMounted(() => {
                 <Label class="flex-1">显示面包屑</Label>
                 <Switch v-model="formData.showBreadcrumb" />
               </div>
-              <div
-                v-if="formData.showBreadcrumb"
-                class="flex items-center justify-between space-y-0 pl-4"
-              >
-                <Label class="flex-1">显示图标</Label>
+              <div v-if="formData.showBreadcrumb" class="flex items-center justify-between pt-1">
+                <Label class="flex-1">面包屑图标</Label>
                 <Switch
                   v-model="formData.showBreadcrumbIcon"
                   :disabled="!formData.showBreadcrumb"
@@ -387,15 +477,15 @@ onMounted(() => {
                 <Switch v-model="formData.showTabs" />
               </div>
               <div v-if="formData.showTabs">
-                <div class="flex items-center justify-between space-y-0 pl-4">
+                <div class="flex items-center justify-between space-y-0">
                   <Label class="flex-1">标签栏风格</Label>
                   <Select v-model="formData.tabsStyle" :disabled="!formData.showTabs">
                     <SelectTrigger class="w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="谷歌风格">谷歌风格</SelectItem>
-                      <SelectItem value="卡片风格">卡片风格</SelectItem>
+                      <SelectItem value="chrome">谷歌风格</SelectItem>
+                      <SelectItem value="card">卡片风格</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -417,7 +507,7 @@ onMounted(() => {
               :class="{ 'border-primary': primaryColor === color.value }"
               @click="selectColor(color.value)"
             >
-              <div class="h-5 w-5 rounded-full" :style="{ backgroundColor: color.value }"></div>
+              <div class="h-3 w-3 rounded-full" :style="{ backgroundColor: color.value }"></div>
               <span class="text-xs">{{ color.name }}</span>
               <div v-if="primaryColor === color.value" class="ml-auto">
                 <svg
@@ -455,9 +545,10 @@ onMounted(() => {
   --gray-mode: 0;
   --color-weak: 0;
   --transition-enabled: 1;
-  --transition-type: '滑动';
+  --transition-type: 'slide';
   --tabs-style: '谷歌风格';
   --reload-strategy: '关闭页面';
+  --scroll-mode: 'mainScroll';
   --theme-mode: 'light';
 }
 

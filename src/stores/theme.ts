@@ -17,17 +17,8 @@ interface PageFeatures {
   reloadStrategy: string;
   pageTransitionEnabled: boolean;
   pageTransition: string;
+  scrollMode: string;
 }
-
-// 主题颜色选项
-export const themeColors = [
-  { name: '默认', value: 'default' },
-  { name: '蓝色', value: 'blue' },
-  { name: '绿色', value: 'green' },
-  { name: '紫色', value: 'purple' },
-  { name: '红色', value: 'red' },
-  { name: '橙色', value: 'orange' },
-];
 
 // 获取默认设置
 const getDefaultSettings = () => ({
@@ -42,10 +33,11 @@ const getDefaultSettings = () => ({
     showBreadcrumb: true,
     showBreadcrumbIcon: true,
     showTabs: true,
-    tabsStyle: '谷歌风格',
+    tabsStyle: 'chrome',
     reloadStrategy: '关闭页面',
     pageTransitionEnabled: true,
-    pageTransition: '滑动',
+    pageTransition: 'slide',
+    scrollMode: 'mainScroll',
   } as PageFeatures,
 });
 

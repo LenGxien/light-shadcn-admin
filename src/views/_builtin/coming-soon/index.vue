@@ -6,6 +6,6 @@
       Coming Soon
       <span class="text-3xl">👀</span>
     </h1>
-    <p class="text-muted-foreground text-lg">页面正在开发中，敬请期待！</p>
+    <p class="text-muted-foreground text-3xl text-primary">敬请期待！</p>
   </div>
 </template>

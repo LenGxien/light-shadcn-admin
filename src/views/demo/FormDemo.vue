@@ -30,6 +30,9 @@ const formSchema = toTypedSchema(
     username: z.string().min(2, {
       message: '用户名至少需要2个字符',
     }),
+    password: z.string().min(6, {
+      message: '密码至少需要6个字符',
+    }),
     email: z.string().email({
       message: '请输入有效的电子邮件地址',
     }),
@@ -91,6 +94,17 @@ const roleOptions = [
           <FormField v-slot="{ componentField }" name="username">
             <FormItem>
               <FormLabel>用户名</FormLabel>
+              <FormControl>
+                <Input v-bind="componentField" placeholder="输入您的用户名" />
+              </FormControl>
+              <FormDescription>这是您的公开显示名称。</FormDescription>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+
+          <FormField v-slot="{ componentField }" name="password">
+            <FormItem>
+              <FormLabel>密码</FormLabel>
               <FormControl>
                 <Input v-bind="componentField" placeholder="输入您的用户名" />
               </FormControl>
